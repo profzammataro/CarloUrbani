@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I.I.S. Carlo Urbani – Orario 2025/26</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --accent: #00c9a7;
+    --accent2: #ff6b6b;
+    --accent3: #ffd166;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2332 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 400px; height: 200px;
+    background: radial-gradient(ellipse, rgba(0,201,167,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .school-icon { font-size: 2.8rem; margin-bottom: 0.4rem; }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 40%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+  .sede-badge {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-size: 0.75rem;
+    color: var(--accent);
+    border: 1px solid rgba(0,201,167,0.3);
+    padding: 2px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.08em;
+  }
+
+  /* SEARCH AREA */
+  .search-area {
+    padding: 1.5rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .search-box {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  .search-box input {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.9rem 1rem 0.9rem 3rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-box input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,201,167,0.15);
+  }
+  .search-box input::placeholder { color: var(--text-muted); }
+  .search-icon {
+    position: absolute;
+    left: 1rem; top: 50%; transform: translateY(-50%);
+    font-size: 1.1rem;
+    pointer-events: none;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .tab {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0d1117;
+  }
+  .tab:not(.active):hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* SUGGESTIONS */
+  .suggestions {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    max-height: 240px;
+    overflow-y: auto;
+    display: none;
+    margin-bottom: 1rem;
+  }
+  .suggestions.show { display: block; }
+  .suggestion-item {
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .suggestion-item:last-child { border-bottom: none; }
+  .suggestion-item:hover { background: var(--surface2); color: var(--accent); }
+
+  /* PLACEHOLDER */
+  .placeholder {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+  }
+  .placeholder-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .placeholder p { font-size: 0.95rem; line-height: 1.6; }
+
+  /* RESULT HEADER */
+  .result-header {
+    padding: 0 1.5rem;
+    max-width: 600px;
+    margin: 0 auto 1rem;
+    display: none;
+  }
+  .result-header.show { display: block; }
+  .result-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--text);
+  }
+  .result-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+  }
+
+  /* TIMETABLE */
+  .timetable-wrap {
+    padding: 0 0.75rem 2rem;
+    max-width: 100%;
+    margin: 0 auto;
+    display: none;
+    overflow-x: auto;
+  }
+  .timetable-wrap.show { display: block; }
+
+  table.orario {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 2px;
+    min-width: 420px;
+  }
+  table.orario thead th {
+    background: var(--surface2);
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.55rem 0.3rem;
+    text-align: center;
+    border-radius: 6px;
+  }
+  table.orario thead th.ora-col {
+    color: var(--text-muted);
+    background: transparent;
+    font-size: 0.65rem;
+    min-width: 28px;
+    width: 28px;
+  }
+  table.orario tbody td.ora-label {
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 0.3rem 0.2rem;
+    background: var(--surface2);
+    border-radius: 6px;
+    vertical-align: middle;
+  }
+  table.orario tbody td.cell {
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 0.45rem 0.3rem;
+    min-width: 60px;
+    min-height: 56px;
+    height: 56px;
+    vertical-align: middle;
+    text-align: center;
+    position: relative;
+    transition: background 0.15s;
+  }
+  table.orario tbody td.cell.filled {
+    background: var(--surface2);
+  }
+  table.orario tbody td.cell.filled:hover {
+    background: #2a3441;
+  }
+  .cell-materia {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.3;
+    font-family: 'Syne', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    display: block;
+  }
+  .cell-info {
+    font-size: 0.58rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    line-height: 1.2;
+    display: block;
+  }
+
+  /* no result */
+  .no-result {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="school-icon">🏫</div>
+  <h1>I.I.S. "Carlo Urbani"</h1>
+  <p>Orario Docenti e Classi 2025/26</p>
+  <div class="sede-badge">Ostia Idroscalo &amp; Tortuga</div>
+</header>
+
+<div class="search-area">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Cerca docente o classe..." autocomplete="off">
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="tabDocente" onclick="setMode('docente')">👩‍🏫 Docente</button>
+    <button class="tab" id="tabClasse" onclick="setMode('classe')">🎓 Classe</button>
+  </div>
+  <div class="suggestions" id="suggestions"></div>
+</div>
+
+<div class="result-header" id="resultHeader">
+  <div class="result-title" id="resultTitle"></div>
+  <div class="result-subtitle" id="resultSubtitle"></div>
+</div>
+
+<div class="timetable-wrap" id="timetableWrap"></div>
+
+<div class="placeholder" id="placeholder">
+  <div class="placeholder-icon">📅</div>
+  <p>Inserisci il nome di un docente<br>o una classe per visualizzare l'orario</p>
+</div>
+
+<script>
+// ============================================================
+// DATI ORARIO – estratti dal PDF I.I.S. Carlo Urbani 2025/26
+// Formato: orario[docente] = { lunedi: [h1,h2,h3,h4,h5,h6], ... }
+// Ogni cella: { materia, classe } oppure null
+// ============================================================
+
+const GIORNI = ['lunedi','martedi','mercoledi','giovedi','venerdi'];
+const GIORNI_LABEL = ['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì'];
+const ORE_LABEL = ['1ª','2ª','3ª','4ª','5ª','6ª'];
+
+// Helper
+const _ = null;
+const c = (materia, classe) => ({ materia, classe });
+
+// ============================================================
+// ORARIO DOCENTI
+// ============================================================
+const orarioDocenti = {
+  "Agnoletti": {
+    lunedi: [_,c("ItalianoeStoria","3Nt"),c("ItalianoeStoria","3Ht"),_,c("ItalianoeStoria","2Do"),c("ItalianoeStoria","1Eo")],
+    martedi: [c("ItalianoeStoria","3Ht"),c("ItalianoeStoria","3Ht"),_,_,_,_],
+    mercoledi: [c("ItalianoeStoria","3Ht"),c("ItalianoeStoria","3Nt"),c("ItalianoeStoria","3Nt"),c("ItalianoeStoria","1Eo"),_,_],
+    giovedi: [c("ItalianoeStoria","1Eo"),c("ItalianoeStoria","2Do"),c("ItalianoeStoria","2Do"),c("ItalianoeStoria","2Do"),_,_],
+    venerdi: [_,_,c("ItalianoeStoria","3Nt"),c("ItalianoeStoria","1Eo"),c("ItalianoeStoria","1Eo"),c("ItalianoeStoria","2Do")],
+  },
+  "Amatucci": {
+    lunedi: [c("ItalianoeStoria","1Ao"),c("ItalianoeStoria","3Ao"),c("ItalianoeStoria","3Po"),c("ItalianoeStoria","1Ao"),_,_],
+    martedi: [c("ItalianoeStoria","1Ao"),c("ItalianoeStoria","1Ao"),c("ItalianoeStoria","3Ao"),_,_,_],
+    mercoledi: [c("ItalianoeStoria","1Ao"),c("ItalianoeStoria","3Ao"),c("ItalianoeStoria","1Ao"),c("ItalianoeStoria","3Po"),c("ItalianoeStoria","3Po"),_],
+    giovedi: [c("ItalianoeStoria","3Ao"),c("ItalianoeStoria","1Ao"),c("ItalianoeStoria","3Ao"),c("ItalianoeStoria","3Ao"),_,_],
+    venerdi: [_,_,c("ItalianoeStoria","3Ao"),c("ItalianoeStoria","1Ao"),_,_],
+  },
+  "Ambrosetti": {
+    lunedi: [_,_,c("Grafica","4Ao"),c("Grafica","4Ao"),c("Grafica","3Ao"),c("Grafica","3Ao")],
+    martedi: [_,_,_,_,c("Grafica","4Ao"),c("Grafica","3Ao")],
+    mercoledi: [_,_,c("Grafica","3Ao"),c("Grafica","3Ao"),_,c("Grafica","4Ao")],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [_,_,_,c("Grafica","3Ao"),_,c("Grafica","4Ao")],
+  },
+  "Balbi": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [_,_,_,c("Informatica","2Eo"),c("Informatica","1Oo"),c("Informatica","1Oo")],
+    mercoledi: [_,c("Informatica","1Ao"),c("Informatica","1Eo"),_,c("Informatica","1Do"),c("Informatica","2Eo")],
+    giovedi: [_,_,_,_,c("Informatica","1Eo"),c("Informatica","1Ao")],
+    venerdi: [c("Informatica","1Oo"),c("Informatica","2Do"),c("Informatica","2Do"),c("Informatica","1Do"),_,_],
+  },
+  "Bellotti": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [_,_,_,c("Geografica","1Oo"),c("Geografica","1Eo"),c("Geografica","2Do")],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [_,_,c("Geografica","1Do"),c("Geografica","2Eo"),_,_],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Belosersky": {
+    lunedi: [_,_,c("Diritto","3Nt"),c("Diritto","2Oo"),c("Diritto","1Ao"),c("Diritto","2Ao")],
+    martedi: [c("Diritto","3Nt"),_,c("Diritto","2Ao"),_,_,_],
+    mercoledi: [_,_,c("Diritto","2Oo"),c("Diritto","1Oo"),c("Diritto","1Eo"),c("Diritto","1Do")],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [c("Diritto","1Eo"),c("Diritto","1Do"),c("Diritto","1Oo"),c("Diritto","3Nt"),_,_],
+  },
+  "Pocci": {
+    lunedi: [_,_,_,c("Tecn.Com./Sc.Um.","2Rt"),c("Tecn.Com./Sc.Um.","2Rt"),_],
+    martedi: [c("Tecn.Com./Sc.Um.","4Eo"),c("Tecn.Com./Sc.Um.","4Ao"),_,_,_,_],
+    mercoledi: [c("Tecn.Com./Sc.Um.","2Rt"),_,c("Tecn.Com./Sc.Um.","4Do"),c("Tecn.Com./Sc.Um.","4Bo"),c("Tecn.Com./Sc.Um.","4Ao"),c("Tecn.Com./Sc.Um.","4Eo")],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [c("Tecn.Com./Sc.Um.","4Do"),c("Tecn.Com./Sc.Um.","4Do"),c("Tecn.Com./Sc.Um.","4Eo"),c("Tecn.Com./Sc.Um.","4Bo"),c("Tecn.Com./Sc.Um.","4Ao"),_],
+  },
+  "Cammisuli": {
+    lunedi: [_,_,_,c("Grafica","2Do"),c("Grafica","2Do"),c("Grafica","2Eo")],
+    martedi: [_,c("Grafica","3Oo"),c("Grafica","3Oo"),c("Grafica","3Oo"),c("Grafica","2Do"),_],
+    mercoledi: [_,_,_,c("Grafica","2Eo"),c("Grafica","2Eo"),c("Grafica","2Do")],
+    giovedi: [c("Grafica","2Do"),c("Grafica","2Eo"),c("Grafica","3Oo"),_,_,_],
+    venerdi: [_,c("Grafica","2Eo"),c("Grafica","2Eo"),c("Grafica","2Do"),c("Grafica","3Oo"),c("Grafica","3Oo")],
+  },
+  "Campanella": {
+    lunedi: [_,c("Diritto","4Ho"),c("Diritto","1Ho"),c("Diritto","2Ht"),c("Diritto","2Nt"),c("Diritto","3Ht")],
+    martedi: [_,c("Diritto","2Rt"),c("Diritto","2Ht"),c("Diritto","4Ho"),c("Diritto","1Ho"),_],
+    mercoledi: [_,_,_,c("Diritto","2Rt"),c("Diritto","2Nt"),_],
+    giovedi: [c("Diritto","1Ho"),c("Diritto","4Ho"),_,c("Diritto","2Nt"),c("Diritto","2Ht"),c("Diritto","3Ht")],
+    venerdi: [_,_,_,c("Diritto","3Ht"),c("Diritto","2Rt"),_],
+  },
+  "Cantarella": {
+    lunedi: [_,_,_,c("Grafica","4Eo"),c("Grafica","4Do"),c("Grafica","4Do")],
+    martedi: [_,_,_,c("Grafica","4Do"),c("Grafica","4Eo"),_],
+    mercoledi: [c("Grafica","4Eo"),c("Grafica","4Eo"),_,c("Grafica","4Do"),c("Grafica","4Do"),c("Grafica","4Do")],
+    giovedi: [c("Grafica","4Do"),_,c("Grafica","4Eo"),c("Grafica","4Eo"),c("Grafica","4Eo"),_],
+    venerdi: [_,_,_,_,c("Grafica","4Do"),c("Grafica","4Eo")],
+  },
+  "Caruso": {
+    lunedi: [_,_,_,c("Matematica","1Oo"),c("Matematica","1Oo"),c("Matematica","2Oo")],
+    martedi: [c("Matematica","2Ao"),c("Matematica","1Oo"),c("Matematica","1Ao"),c("Matematica","2Oo"),c("Matematica","2Oo"),_],
+    mercoledi: [_,c("Matematica","1Oo"),c("Matematica","1Oo"),c("Matematica","1Ao"),_,c("Matematica","2Ao")],
+    giovedi: [_,_,_,c("Matematica","1Ao"),c("Matematica","1Oo"),c("Matematica","2Oo")],
+    venerdi: [_,_,_,c("Matematica","1Oo"),c("Matematica","2Ao"),c("Matematica","1Ao")],
+  },
+  "Chiodo": {
+    lunedi: [c("Diritto","2Do"),c("Diritto","2Eo"),_,_,_,_],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [c("Diritto","2Eo"),c("Diritto","2Do"),_,_,_,_],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Cicala": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [_,_,_,c("IRC","2Oo"),c("IRC","1Ao"),c("IRC","1Oo")],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [c("IRC","3Ao"),c("IRC","2Ao"),c("IRC","4Ao"),_,_,_],
+  },
+  "Corigliano": {
+    lunedi: [_,c("Grafica","2Oo"),_,c("Grafica","3Oo"),c("Grafica","3Po"),c("Grafica","3Po")],
+    martedi: [c("Grafica","3Po"),_,c("Grafica","2Oo"),_,c("Grafica","3Oo"),c("Grafica","3Oo")],
+    mercoledi: [_,_,_,_,_,c("Grafica","3Po")],
+    giovedi: [c("Grafica","2Oo"),c("Grafica","3Po"),c("Grafica","3Po"),c("Grafica","3Oo"),_,_],
+    venerdi: [_,_,_,_,_,c("Grafica","3Po")],
+  },
+  "Costanzo": {
+    lunedi: [c("Francese","4Eo"),c("Francese","5Eo"),c("Francese","1Do"),c("Francese","4Do"),c("Francese","5Do"),_],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [_,_,_,c("Francese","4Do"),c("Francese","3Do"),c("Francese","5Do")],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [c("Francese","5Eo"),c("Francese","3Do"),c("Francese","1Do"),c("Francese","4Eo"),_,_],
+  },
+  "D'Antonio": {
+    lunedi: [_,_,c("Grafica","3Ao"),c("Grafica","4Bo"),c("Grafica","4Bo"),c("Grafica","3Ao")],
+    martedi: [c("Grafica","3Ao"),c("Grafica","3Ao"),c("Grafica","4Bo"),c("Grafica","4Bo"),_,_],
+    mercoledi: [c("Grafica","4Ao"),c("Grafica","4Ao"),_,_,_,_],
+    giovedi: [_,c("Grafica","4Ao"),c("Grafica","4Bo"),c("Grafica","4Bo"),c("Grafica","3Ao"),c("Grafica","3Ao")],
+    venerdi: [_,_,_,_,_,c("Grafica","3Ao")],
+  },
+  "D'Ubaldi": {
+    lunedi: [c("ItalianoeStoria","1Ho"),c("ItalianoeStoria","4Bo"),_,_,_,_],
+    martedi: [c("ItalianoeStoria","4Bo"),c("ItalianoeStoria","4Bo"),_,c("ItalianoeStoria","1Ho"),c("ItalianoeStoria","4Ho"),c("ItalianoeStoria","4Ho")],
+    mercoledi: [c("ItalianoeStoria","1Ho"),c("ItalianoeStoria","1Ho"),c("ItalianoeStoria","3Do"),c("ItalianoeStoria","4Bo"),c("ItalianoeStoria","4Bo"),_],
+    giovedi: [c("ItalianoeStoria","4Bo"),c("ItalianoeStoria","1Ho"),c("ItalianoeStoria","1Ho"),c("ItalianoeStoria","4Ho"),_,_],
+    venerdi: [c("ItalianoeStoria","1Ho"),c("ItalianoeStoria","4Ho"),c("ItalianoeStoria","4Bo"),c("ItalianoeStoria","3Do"),_,_],
+  },
+  "D'Urso": {
+    lunedi: [_,_,c("ItalianoeStoria","2Ht"),c("ItalianoeStoria","2Ao"),c("ItalianoeStoria","2Ao"),c("ItalianoeStoria","4Ao")],
+    martedi: [_,c("ItalianoeStoria","2Ao"),c("ItalianoeStoria","2Ao"),_,c("ItalianoeStoria","4Ao"),c("ItalianoeStoria","4Ao")],
+    mercoledi: [c("ItalianoeStoria","2Ao"),c("ItalianoeStoria","2Ao"),_,_,_,_],
+    giovedi: [c("ItalianoeStoria","2Ao"),c("ItalianoeStoria","2Ao"),c("ItalianoeStoria","4Ao"),c("ItalianoeStoria","4Ao"),_,_],
+    venerdi: [c("ItalianoeStoria","2Ht"),c("ItalianoeStoria","2Ht"),_,c("ItalianoeStoria","4Ao"),_,_],
+  },
+  "Di Comite": {
+    lunedi: [c("Grafica","1Do"),c("Grafica","1Eo"),c("Grafica","1Eo"),c("Grafica","1Ho"),c("Grafica","4Ho"),_],
+    martedi: [c("Grafica","1Eo"),c("Grafica","1Eo"),c("Grafica","1Eo"),c("Grafica","1Do"),_,_],
+    mercoledi: [c("Grafica","1Do"),c("Grafica","1Do"),c("Grafica","1Do"),c("Grafica","2Eo"),c("Grafica","1Ao"),_],
+    giovedi: [c("Grafica","1Do"),c("Grafica","1Eo"),c("Grafica","1Eo"),_,c("Grafica","1Do"),c("Grafica","1Do")],
+    venerdi: [c("Grafica","2Eo"),c("Grafica","1Eo"),c("Grafica","4Ao"),_,_,_],
+  },
+  "Di Cosimo": {
+    lunedi: [c("IRC","5Eo"),c("IRC","1Do"),c("IRC","4Eo"),c("IRC","1Ho"),_,_],
+    martedi: [c("IRC","2Do"),c("IRC","5Do"),c("IRC","3Do"),_,c("IRC","2Ht"),c("IRC","3Nt")],
+    mercoledi: [c("IRC","4Do"),c("IRC","1Eo"),c("IRC","3Oo"),_,_,_],
+    giovedi: [c("IRC","2Nt"),c("IRC","2Rt"),c("IRC","3Ht"),_,_,_],
+    venerdi: [_,_,_,_,c("IRC","3Po"),c("IRC","2Eo")],
+  },
+  "Di Paco": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [_,_,c("Spagnolo","1Ho"),_,_,_],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [_,_,_,_,c("Spagnolo","1Ho"),c("Spagnolo","1Ho")],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Eluisi": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [c("Matematica","3Oo"),c("Matematica","3Oo"),_,_,_,_],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [c("Matematica","4Ao"),c("Matematica","3Oo"),c("Matematica","3Oo"),_,_,_],
+  },
+  "Esposito": {
+    lunedi: [c("Spagnolo","3Nt"),c("Spagnolo","2Rt"),_,_,_,_],
+    martedi: [_,_,c("Spagnolo","3Nt"),c("Spagnolo","2Ht"),c("Spagnolo","2Rt"),c("Spagnolo","2Nt")],
+    mercoledi: [c("Spagnolo","2Nt"),c("Spagnolo","3Ht"),c("Spagnolo","2Ht"),_,c("Spagnolo","4Ho"),c("Spagnolo","4Ho")],
+    giovedi: [c("Spagnolo","3Ht"),_,c("Spagnolo","3Nt"),c("Spagnolo","2Rt"),_,_],
+    venerdi: [c("Spagnolo","2Nt"),c("Spagnolo","3Ht"),c("Spagnolo","2Ht"),c("Spagnolo","4Ho"),_,_],
+  },
+  "Falcolini": {
+    lunedi: [_,_,c("ItalianoeStoria","1Oo"),c("ItalianoeStoria","1Oo"),_,_],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [c("ItalianoeStoria","1Oo"),c("ItalianoeStoria","1Oo"),_,_,_,_],
+    venerdi: [_,_,_,_,c("ItalianoeStoria","1Oo"),c("ItalianoeStoria","1Oo")],
+  },
+  "Feola": {
+    lunedi: [c("Matematica","5Do"),c("Matematica","4Do"),c("Matematica","3Po"),_,_,_],
+    martedi: [c("Matematica","3Do"),c("Matematica","2Do"),c("Matematica","3Po"),c("Matematica","3Ao"),_,_],
+    mercoledi: [c("Matematica","3Po"),c("Matematica","4Do"),c("Matematica","2Do"),c("Matematica","2Do"),c("Matematica","5Do"),_],
+    giovedi: [_,_,_,c("Matematica","5Do"),c("Matematica","2Do"),c("Matematica","4Do")],
+    venerdi: [_,_,_,_,c("Matematica","3Do"),c("Matematica","3Do")],
+  },
+  "Ferraro": {
+    lunedi: [c("Francese","1Eo"),c("Francese","3Po"),c("Francese","2Do"),_,_,_],
+    martedi: [c("Francese","2Eo"),c("Francese","1Eo"),_,_,_,_],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [c("Francese","3Po"),c("Francese","2Eo"),c("Francese","2Do"),_,_,_],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Fiorillo": {
+    lunedi: [_,_,_,c("ItalianoeStoria","5Eo"),c("ItalianoeStoria","5Eo"),c("ItalianoeStoria","3Do")],
+    martedi: [c("ItalianoeStoria","2Oo"),c("ItalianoeStoria","3Po"),_,c("ItalianoeStoria","5Eo"),c("ItalianoeStoria","3Do"),c("ItalianoeStoria","3Do")],
+    mercoledi: [c("ItalianoeStoria","5Eo"),c("ItalianoeStoria","3Po"),c("ItalianoeStoria","3Po"),_,_,_],
+    giovedi: [_,_,c("ItalianoeStoria","2Oo"),c("ItalianoeStoria","2Oo"),c("ItalianoeStoria","5Eo"),c("ItalianoeStoria","3Do")],
+    venerdi: [c("ItalianoeStoria","3Po"),c("ItalianoeStoria","2Oo"),c("ItalianoeStoria","5Eo"),_,_,_],
+  },
+  "Gabriotti": {
+    lunedi: [_,_,c("Matematica","4Ho"),c("Matematica","4Ho"),c("Matematica","1Ho"),_],
+    martedi: [c("Matematica","1Ho"),c("Matematica","4Ho"),_,c("Matematica","3Nt"),c("Matematica","3Ht"),c("Matematica","3Ht")],
+    mercoledi: [_,_,_,c("Matematica","3Nt"),c("Matematica","3Ht"),c("Matematica","3Ht")],
+    giovedi: [c("Matematica","3Nt"),c("Matematica","3Nt"),_,c("Matematica","1Ho"),c("Matematica","4Ho"),c("Matematica","4Ho")],
+    venerdi: [_,_,_,_,c("Matematica","3Nt"),c("Matematica","3Ht")],
+  },
+  "Giovannini": {
+    lunedi: [_,_,_,c("Tecn.Com./Sc.Um.","3Do"),c("Tecn.Com./Sc.Um.","3Do"),c("Tecn.Com./Sc.Um.","5Do")],
+    martedi: [c("Tecn.Com./Sc.Um.","5Eo"),c("Tecn.Com./Sc.Um.","5Eo"),c("Tecn.Com./Sc.Um.","5Do"),_,_,_],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [_,_,_,c("Tecn.Com./Sc.Um.","5Eo"),c("Tecn.Com./Sc.Um.","3Do"),c("Tecn.Com./Sc.Um.","5Do")],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Giuliani": {
+    lunedi: [_,_,_,_,_,c("Ec.Aziendale","4Eo")],
+    martedi: [_,_,c("Ec.Aziendale","5Eo"),c("Ec.Aziendale","3Do"),c("Ec.Aziendale","4Do"),c("Ec.Aziendale","3Po")],
+    mercoledi: [c("Ec.Aziendale","3Do"),c("Ec.Aziendale","3Po"),c("Ec.Aziendale","5Do"),c("Ec.Aziendale","5Do"),c("Ec.Aziendale","4Eo"),_],
+    giovedi: [_,_,_,c("Ec.Aziendale","4Do"),c("Ec.Aziendale","3Po"),c("Ec.Aziendale","5Eo")],
+    venerdi: [c("Ec.Aziendale","3Do"),c("Ec.Aziendale","5Eo"),c("Ec.Aziendale","5Do"),c("Ec.Aziendale","4Do"),c("Ec.Aziendale","4Eo"),_],
+  },
+  "Guerani": {
+    lunedi: [c("Inglese","3Ao"),c("Inglese","1Oo"),c("Inglese","1Oo"),_,c("Inglese","1Ao"),c("Inglese","1Ao")],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [_,_,_,c("Inglese","3Ao"),c("Inglese","1Oo"),c("Inglese","1Ao")],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Lico": {
+    lunedi: [c("Inglese","2Nt"),_,c("Inglese","2Rt"),c("Inglese","3Nt"),c("Inglese","2Ht"),c("Inglese","2Nt")],
+    martedi: [c("Inglese","1Do"),c("Inglese","1Do"),_,_,_,_],
+    mercoledi: [c("Inglese","3Nt"),c("Inglese","2Nt"),c("Inglese","3Ht"),c("Inglese","2Ht"),c("Inglese","2Rt"),_],
+    giovedi: [c("Inglese","2Rt"),c("Inglese","2Ht"),_,c("Inglese","1Do"),_,_],
+    venerdi: [c("Inglese","3Ht"),c("Inglese","3Nt"),c("Inglese","3Ht"),_,_,_],
+  },
+  "Litto": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [c("Grafica","2Do"),_,_,c("Grafica","2Ao"),_,_],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [c("Grafica","2Do"),_,c("Grafica","2Ao"),_,_,_],
+  },
+  "Lodi": {
+    lunedi: [_,_,_,_,c("Storia","3Ht"),c("Storia","3Nt")],
+    martedi: [c("Storia","4Ho"),_,c("Storia","3Ht"),_,_,_],
+    mercoledi: [c("Storia","4Ho"),c("Storia","2Oo"),_,c("Storia","3Ht"),_,_],
+    giovedi: [c("Storia","4Ho"),_,_,c("Storia","3Ht"),c("Storia","3Nt"),c("Storia","3Nt")],
+    venerdi: [c("Storia","3Nt"),_,_,_,c("Storia","4Ho"),c("Storia","2Oo")],
+  },
+  "Malvaso": {
+    lunedi: [_,_,_,c("Inglese","4Ao"),c("Inglese","4Ao"),c("Inglese","3Do")],
+    martedi: [_,c("Inglese","1Ho"),c("Inglese","4Ho"),c("Inglese","2Ao"),c("Inglese","4Bo"),_],
+    mercoledi: [_,c("Inglese","3Do"),c("Inglese","4Ao"),c("Inglese","4Ho"),c("Inglese","1Ho"),_],
+    giovedi: [_,c("Inglese","4Bo"),c("Inglese","2Ao"),c("Inglese","2Ao"),_,_],
+    venerdi: [c("Inglese","2Ao"),c("Inglese","1Ho"),c("Inglese","4Ho"),c("Inglese","4Bo"),_,_],
+  },
+  "Mangiacapra": {
+    lunedi: [_,_,_,c("Inglese","5Do"),c("Inglese","2Eo"),c("Inglese","3Oo")],
+    martedi: [_,_,_,c("Inglese","3Po"),c("Inglese","5Do"),c("Inglese","1Eo")],
+    mercoledi: [c("Inglese","2Oo"),c("Inglese","3Oo"),c("Inglese","2Eo"),c("Inglese","5Eo"),_,_],
+    giovedi: [_,_,c("Inglese","3Po"),c("Inglese","1Eo"),c("Inglese","2Oo"),c("Inglese","2Eo")],
+    venerdi: [c("Inglese","3Oo"),c("Inglese","3Po"),c("Inglese","1Eo"),c("Inglese","5Eo"),c("Inglese","2Oo"),_],
+  },
+  "Mangione": {
+    lunedi: [c("Grafica","3Do"),c("Grafica","3Do"),_,_,_,_],
+    martedi: [c("Grafica","5Do"),c("Grafica","3Do"),_,_,_,_],
+    mercoledi: [c("Grafica","5Do"),c("Grafica","5Do"),_,c("Grafica","3Do"),c("Grafica","3Do"),c("Grafica","3Do")],
+    giovedi: [c("Grafica","3Do"),c("Grafica","5Do"),c("Grafica","5Do"),_,_,_],
+    venerdi: [_,_,c("Grafica","3Do"),c("Grafica","5Do"),c("Grafica","5Do"),c("Grafica","5Do")],
+  },
+  "Marone": {
+    lunedi: [c("Tecn.Com./Sc.Um.","3Po"),c("Tecn.Com./Sc.Um.","3Oo"),c("Tecn.Com./Sc.Um.","3Oo"),c("Tecn.Com./Sc.Um.","3Ht"),c("Tecn.Com./Sc.Um.","3Nt"),_],
+    martedi: [c("Tecn.Com./Sc.Um.","2Ht"),c("Tecn.Com./Sc.Um.","3Nt"),_,_,_,_],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [_,c("Tecn.Com./Sc.Um.","3Ht"),c("Tecn.Com./Sc.Um.","2Ht"),_,c("Tecn.Com./Sc.Um.","3Po"),c("Tecn.Com./Sc.Um.","3Po")],
+    venerdi: [_,_,c("Tecn.Com./Sc.Um.","3Po"),c("Tecn.Com./Sc.Um.","2Ht"),c("Tecn.Com./Sc.Um.","3Ht"),c("Tecn.Com./Sc.Um.","3Nt")],
+  },
+  "Martore": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [_,_,_,c("St.Arte","5Eo"),c("St.Arte","5Do"),c("St.Arte","4Do")],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [c("St.Arte","5Do"),c("St.Arte","4Do"),c("St.Arte","5Eo"),_,_,_],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Navisse": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [_,_,_,c("ItP","1Oo"),c("ItP","2Oo"),_],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Pacioni": {
+    lunedi: [_,_,_,c("Lab.Mult./ItP","4Bo"),c("Lab.Mult./ItP","4Bo"),c("Lab.Mult./ItP","4Bo")],
+    martedi: [_,_,c("Lab.Mult./ItP","4Bo"),c("Lab.Mult./ItP","4Bo"),c("Lab.Mult./ItP","1Ao"),c("Lab.Mult./ItP","1Ao")],
+    mercoledi: [c("Lab.Mult./ItP","4Bo"),c("Lab.Mult./ItP","4Bo"),c("Lab.Mult./ItP","4Bo"),_,_,_],
+    giovedi: [_,_,c("Lab.Mult./ItP","4Bo"),c("Lab.Mult./ItP","4Bo"),c("Lab.Mult./ItP","2Ao"),c("Lab.Mult./ItP","2Ao")],
+    venerdi: [c("Lab.Mult./ItP","1Ao"),c("Lab.Mult./ItP","1Ao"),_,_,_,_],
+  },
+  "Paradiso": {
+    lunedi: [c("Lab.Mult./ItP","4Ao"),c("Lab.Mult./ItP","1Eo"),_,c("Lab.Mult./ItP","2Do"),c("Lab.Mult./ItP","2Do"),_],
+    martedi: [_,_,_,c("Lab.Mult./ItP","1Do"),c("Lab.Mult./ItP","3Ao"),c("Lab.Mult./ItP","3Ao")],
+    mercoledi: [c("Lab.Mult./ItP","1Do"),c("Lab.Mult./ItP","1Do"),c("Lab.Mult./ItP","1Do"),c("Lab.Mult./ItP","2Eo"),_,_],
+    giovedi: [_,_,c("Lab.Mult./ItP","1Eo"),c("Lab.Mult./ItP","4Ao"),c("Lab.Mult./ItP","4Ao"),c("Lab.Mult./ItP","4Ao")],
+    venerdi: [c("Lab.Mult./ItP","2Eo"),c("Lab.Mult./ItP","3Ao"),_,_,_,_],
+  },
+  "Pescatori": {
+    lunedi: [c("Grafica","2Ao"),c("Grafica","2Ao"),_,_,_,_],
+    martedi: [_,_,_,_,c("Grafica","1Ao"),c("Grafica","1Ao")],
+    mercoledi: [_,_,c("Grafica","2Ao"),_,_,_],
+    giovedi: [_,_,_,_,c("Grafica","4Bo"),c("Grafica","4Bo")],
+    venerdi: [c("Grafica","1Ao"),c("Grafica","1Ao"),_,_,_,_],
+  },
+  "Philippova": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [c("Sc.Umane","3Ao"),c("Sc.Umane","4Ho"),c("Sc.Umane","4Ho"),c("Sc.Umane","1Ho"),_,_],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [c("Sc.Umane","4Ho"),c("Sc.Umane","3Ao"),c("Sc.Umane","1Ho"),c("Sc.Umane","1Ho"),_,_],
+  },
+  "Piergentili": {
+    lunedi: [c("Matematica","2Ht"),c("Matematica","2Nt"),_,_,_,_],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [c("Matematica","2Ht"),c("Matematica","2Ht"),c("Matematica","2Rt"),_,_,_],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [c("Matematica","2Rt"),c("Matematica","2Rt"),c("Matematica","2Nt"),c("Matematica","2Nt"),_,_],
+  },
+  "Piredda": {
+    lunedi: [c("Sc.Motorie","4Ho"),c("Sc.Motorie","2Do"),c("Sc.Motorie","2Ao"),c("Sc.Motorie","3Ao"),c("Sc.Motorie","3Oo"),_],
+    martedi: [c("Sc.Motorie","4Ao"),c("Sc.Motorie","2Eo"),c("Sc.Motorie","2Eo"),_,_,_],
+    mercoledi: [_,_,_,c("Sc.Motorie","3Oo"),c("Sc.Motorie","2Ao"),c("Sc.Motorie","3Ao")],
+    giovedi: [_,_,_,_,_,c("Sc.Motorie","2Do")],
+    venerdi: [_,c("Sc.Motorie","4Ao"),c("Sc.Motorie","2Oo"),c("Sc.Motorie","2Oo"),c("Sc.Motorie","4Bo"),c("Sc.Motorie","4Ho")],
+  },
+  "Pomanti": {
+    lunedi: [c("Sc.Motorie","3Ht"),c("Sc.Motorie","3Ht"),c("Sc.Motorie","2Nt"),c("Sc.Motorie","2Nt"),_,_],
+    martedi: [_,_,c("Sc.Motorie","2Rt"),c("Sc.Motorie","2Rt"),_,c("Sc.Motorie","5Do")],
+    mercoledi: [_,c("Sc.Motorie","5Eo"),c("Sc.Motorie","5Eo"),_,c("Sc.Motorie","3Nt"),c("Sc.Motorie","3Nt")],
+    giovedi: [c("Sc.Motorie","4Eo"),c("Sc.Motorie","4Eo"),c("Sc.Motorie","3Do"),c("Sc.Motorie","3Do"),c("Sc.Motorie","5Do"),_],
+    venerdi: [_,c("Sc.Motorie","2Ao"),_,_,c("Sc.Motorie","2Ht"),c("Sc.Motorie","2Ht")],
+  },
+  "Pontecorvo": {
+    lunedi: [c("Grafica","3Oo"),c("Grafica","3Oo"),c("Grafica","4Bo"),c("Grafica","4Bo"),_,_],
+    martedi: [_,_,_,_,c("Grafica","2Ao"),c("Grafica","2Ao")],
+    mercoledi: [_,_,c("Grafica","4Bo"),_,_,_],
+    giovedi: [_,_,_,_,c("Grafica","3Oo"),c("Grafica","3Oo")],
+    venerdi: [c("Grafica","4Bo"),c("Grafica","4Bo"),_,_,_,_],
+  },
+  "Portino": {
+    lunedi: [c("Sc.Biologia","2Oo"),c("Sc.Biologia","1Ao"),c("Sc.Biologia","1Ao"),_,_,_],
+    martedi: [c("Sc.Biologia","1Oo"),c("Sc.Biologia","2Oo"),_,_,_,_],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [c("Sc.Biologia","1Ao"),_,c("Sc.Biologia","1Oo"),c("Sc.Biologia","1Oo"),c("Sc.Biologia","2Oo"),_],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Pugliese": {
+    lunedi: [_,_,_,_,c("Sc.Biologia","2Ao"),c("Sc.Biologia","1Oo")],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [c("Sc.Biologia","1Oo"),c("Sc.Biologia","2Ao"),c("Sc.Biologia","1Ao"),_,_,_],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Ralaimaro": {
+    lunedi: [c("ItalianoeStoria","4Do"),c("ItalianoeStoria","4Eo"),_,_,_,_],
+    martedi: [c("ItalianoeStoria","3Oo"),c("ItalianoeStoria","4Do"),c("ItalianoeStoria","4Do"),c("ItalianoeStoria","4Eo"),_,_],
+    mercoledi: [_,_,c("ItalianoeStoria","4Eo"),c("ItalianoeStoria","4Eo"),c("ItalianoeStoria","3Oo"),c("ItalianoeStoria","3Oo")],
+    giovedi: [c("ItalianoeStoria","3Oo"),c("ItalianoeStoria","3Oo"),c("ItalianoeStoria","4Do"),c("ItalianoeStoria","4Do"),_,_],
+    venerdi: [c("ItalianoeStoria","4Eo"),c("ItalianoeStoria","4Eo"),c("ItalianoeStoria","4Do"),c("ItalianoeStoria","3Oo"),_,_],
+  },
+  "Rizzi": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [c("tecn.Comun.","2Nt"),c("tecn.Comun.","2Nt"),_,_,_,_],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [_,_,_,_,c("tecn.Comun.","2Nt"),_],
+  },
+  "Rosati": {
+    lunedi: [c("Sc.Motorie","1Oo"),c("Sc.Motorie","1Ho"),c("Sc.Motorie","4Do"),c("Sc.Motorie","1Eo"),_,_],
+    martedi: [_,_,c("Sc.Motorie","1Oo"),c("Sc.Motorie","1Ao"),c("Sc.Motorie","3Po"),c("Sc.Motorie","1Do")],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [_,_,c("Sc.Motorie","1Ao"),c("Sc.Motorie","3Po"),c("Sc.Motorie","4Do"),c("Sc.Motorie","1Eo")],
+    venerdi: [_,_,_,c("Sc.Motorie","3Po"),c("Sc.Motorie","1Do"),c("Sc.Motorie","1Ho")],
+  },
+  "Rossi": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [_,_,c("t.t.R.G.","1Ao"),c("t.t.R.G.","2Ao"),c("t.t.R.G.","1Oo"),c("t.t.R.G.","2Oo")],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [_,c("t.t.R.G.","2Oo"),_,c("t.t.R.G.","2Ao"),c("t.t.R.G.","1Ao"),c("t.t.R.G.","1Oo")],
+    venerdi: [c("t.t.R.G.","2Oo"),c("t.t.R.G.","1Oo"),c("t.t.R.G.","1Ao"),c("t.t.R.G.","2Ao"),_,_],
+  },
+  "Salatino": {
+    lunedi: [_,_,c("Matematica","5Eo"),c("Matematica","2Eo"),c("Matematica","1Eo"),c("Matematica","1Do")],
+    martedi: [_,_,c("Matematica","1Do"),c("Matematica","1Eo"),c("Matematica","2Eo"),c("Matematica","4Eo")],
+    mercoledi: [c("Matematica","1Eo"),c("Matematica","2Eo"),_,_,_,_],
+    giovedi: [c("Matematica","5Eo"),c("Matematica","5Eo"),_,c("Matematica","1Eo"),c("Matematica","2Eo"),c("Matematica","4Eo")],
+    venerdi: [c("Matematica","1Do"),c("Matematica","1Do"),c("Matematica","4Eo"),_,_,_],
+  },
+  "Santivetti": {
+    lunedi: [c("Matematica","4Bo"),c("Matematica","4Ao"),c("Matematica","3Ao"),_,_,_],
+    martedi: [_,_,_,_,_,c("Matematica","4Bo")],
+    mercoledi: [_,_,_,c("Matematica","4Ao"),c("Matematica","3Ao"),c("Matematica","4Bo")],
+    giovedi: [c("Matematica","4Ao"),c("Matematica","3Ao"),_,_,_,_],
+    venerdi: [_,_,_,_,c("Matematica","3Ao"),c("Matematica","4Bo")],
+  },
+  "Sassu": {
+    lunedi: [_,_,c("Fisica","2Oo"),c("Fisica","1Ao"),_,_],
+    martedi: [_,_,_,_,_,_],
+    mercoledi: [_,_,_,c("Fisica","1Ao"),c("Fisica","2Oo"),c("Fisica","2Oo")],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [_,_,_,_,c("Fisica","1Ao"),c("Fisica","2Ao")],
+  },
+  "Serlenga": {
+    lunedi: [_,_,c("Sc.Biologia","2Eo"),c("Sc.Biologia","1Do"),c("Sc.Biologia","2Oo"),c("Sc.Biologia","2Do")],
+    martedi: [c("Sc.Biologia","2Rt"),c("Sc.Biologia","2Ht"),c("Sc.Biologia","2Nt"),c("Sc.Biologia","2Oo"),_,_],
+    mercoledi: [_,_,c("Sc.Biologia","1Ho"),c("Sc.Biologia","1Do"),c("Sc.Biologia","2Do"),c("Sc.Biologia","1Eo")],
+    giovedi: [c("Sc.Biologia","2Eo"),_,c("Sc.Biologia","2Rt"),c("Sc.Biologia","2Ht"),c("Sc.Biologia","2Nt"),_],
+    venerdi: [_,_,_,_,c("Sc.Biologia","1Ho"),c("Sc.Biologia","1Eo")],
+  },
+  "Stirparo": {
+    lunedi: [_,_,_,_,_,_],
+    martedi: [c("Inglese","4Do"),c("Inglese","4Eo"),c("Inglese","2Do"),c("Inglese","2Do"),_,_],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [_,_,_,_,_,_],
+    venerdi: [_,_,_,c("Inglese","4Eo"),c("Inglese","2Do"),c("Inglese","4Do")],
+  },
+  "Tamburro": {
+    lunedi: [_,_,c("St.Arte","3Do"),c("St.Arte","3Po"),c("St.Arte","4Eo"),c("St.Arte","4Ho")],
+    martedi: [_,c("St.Arte","3Po"),c("St.Arte","4Eo"),c("St.Arte","3Ht"),c("St.Arte","3Nt"),_],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [_,c("St.Arte","3Do"),c("St.Arte","4Ho"),c("St.Arte","3Nt"),c("St.Arte","3Ht"),_],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Targusi": {
+    lunedi: [_,_,_,_,_,c("Grafica","5Eo")],
+    martedi: [_,_,c("Grafica","4Ao"),c("Grafica","4Ao"),c("Grafica","5Eo"),c("Grafica","5Eo")],
+    mercoledi: [_,_,c("Grafica","4Ao"),c("Grafica","4Ao"),c("Grafica","5Eo"),c("Grafica","5Eo")],
+    giovedi: [_,_,_,c("Grafica","5Eo"),c("Grafica","2Ao"),c("Grafica","2Ao")],
+    venerdi: [_,_,_,_,c("Grafica","5Eo"),c("Grafica","5Eo")],
+  },
+  "Terracciano": {
+    lunedi: [_,_,_,_,_,c("ItP","3Ao")],
+    martedi: [c("ItP","3Ao"),c("ItP","3Ao"),c("ItP","4Ao"),c("ItP","4Ao"),c("ItP","5Eo"),_],
+    mercoledi: [c("ItP","5Do"),c("ItP","5Do"),c("ItP","4Ao"),c("ItP","4Ao"),_,_],
+    giovedi: [_,_,_,c("ItP","5Eo"),c("ItP","3Ao"),c("ItP","3Ao")],
+    venerdi: [_,_,_,_,c("ItP","5Do"),c("ItP","5Eo")],
+  },
+  "Varvaro": {
+    lunedi: [_,_,_,_,c("ItP","3Po"),c("ItP","3Po")],
+    martedi: [c("ItP","1Eo"),c("ItP","3Oo"),c("ItP","3Oo"),c("ItP","3Oo"),c("ItP","4Eo"),_],
+    mercoledi: [_,_,_,c("ItP","2Eo"),c("ItP","2Eo"),c("ItP","3Po")],
+    giovedi: [_,c("ItP","1Eo"),c("ItP","3Oo"),c("ItP","4Eo"),_,_],
+    venerdi: [_,_,_,_,_,_],
+  },
+  "Viola": {
+    lunedi: [c("ItalianoeStoria","2Rt"),c("ItalianoeStoria","2Ht"),_,_,_,_],
+    martedi: [_,_,_,c("ItalianoeStoria","2Nt"),c("ItalianoeStoria","2Nt"),c("ItalianoeStoria","2Rt")],
+    mercoledi: [_,c("ItalianoeStoria","2Rt"),c("ItalianoeStoria","2Nt"),c("ItalianoeStoria","2Nt"),c("ItalianoeStoria","2Ht"),c("ItalianoeStoria","2Ht")],
+    giovedi: [c("ItalianoeStoria","2Ht"),c("ItalianoeStoria","2Nt"),c("ItalianoeStoria","2Nt"),_,c("ItalianoeStoria","2Rt"),c("ItalianoeStoria","2Rt")],
+    venerdi: [_,c("ItalianoeStoria","2Nt"),c("ItalianoeStoria","2Rt"),c("ItalianoeStoria","2Rt"),_,_],
+  },
+  "Volpea.": {
+    lunedi: [c("ItP","2Ao"),c("ItP","2Ao"),c("ItP","3Ao"),c("ItP","3Oo"),c("ItP","4Do"),_],
+    martedi: [_,_,_,_,c("ItP","3Oo"),c("ItP","3Oo")],
+    mercoledi: [c("ItP","4Ao"),c("ItP","4Ao"),c("ItP","2Ao"),_,_,_],
+    giovedi: [_,c("ItP","4Ao"),_,c("ItP","3Oo"),c("ItP","4Bo"),c("ItP","4Bo")],
+    venerdi: [_,_,_,_,c("ItP","4Do"),c("ItP","3Ao")],
+  },
+  "Volpei.": {
+    lunedi: [c("ItalianoeStoria","2Eo"),c("ItalianoeStoria","5Do"),c("ItalianoeStoria","5Do"),c("ItalianoeStoria","1Do"),c("ItalianoeStoria","1Do"),_],
+    martedi: [_,_,_,c("ItalianoeStoria","5Do"),c("ItalianoeStoria","1Do"),c("ItalianoeStoria","2Eo")],
+    mercoledi: [_,_,_,_,_,_],
+    giovedi: [_,c("ItalianoeStoria","1Do"),c("ItalianoeStoria","2Eo"),c("ItalianoeStoria","5Do"),_,_],
+    venerdi: [c("ItalianoeStoria","5Do"),c("ItalianoeStoria","5Do"),_,c("ItalianoeStoria","2Eo"),c("ItalianoeStoria","2Eo"),c("ItalianoeStoria","1Do")],
+  },
+};
+
+// ============================================================
+// COSTRUZIONE ORARIO PER CLASSE
+// ============================================================
+function buildClasseTimetable(classe) {
+  const result = {};
+  GIORNI.forEach(g => { result[g] = [null,null,null,null,null,null]; });
+
+  for (const [docente, orario] of Object.entries(orarioDocenti)) {
+    for (const giorno of GIORNI) {
+      const ore = orario[giorno] || [];
+      ore.forEach((cella, i) => {
+        if (i < 6 && cella && cella.classe === classe) {
+          result[giorno][i] = { materia: cella.materia, docente };
+        }
+      });
+    }
+  }
+  return result;
+}
+
+// ============================================================
+// LISTA CLASSI
+// ============================================================
+const tutteLeClassi = new Set();
+for (const orario of Object.values(orarioDocenti)) {
+  for (const ore of Object.values(orario)) {
+    ore.forEach(c => { if (c) tutteLeClassi.add(c.classe); });
+  }
+}
+const classiList = [...tutteLeClassi].sort();
+const docentiList = Object.keys(orarioDocenti).sort();
+
+// ============================================================
+// APP STATE
+// ============================================================
+let mode = 'docente';
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('tabDocente').className = 'tab' + (m === 'docente' ? ' active' : '');
+  document.getElementById('tabClasse').className  = 'tab' + (m === 'classe' ? ' active' : '');
+  document.getElementById('searchInput').value = '';
+  document.getElementById('suggestions').classList.remove('show');
+  hideTimetable();
+}
+
+function hideTimetable() {
+  document.getElementById('resultHeader').classList.remove('show');
+  document.getElementById('timetableWrap').classList.remove('show');
+  document.getElementById('placeholder').style.display = 'block';
+}
+
+// Search input
+const input = document.getElementById('searchInput');
+const sugg = document.getElementById('suggestions');
+
+input.addEventListener('input', () => {
+  const val = input.value.trim().toLowerCase();
+  if (!val) { sugg.classList.remove('show'); return; }
+
+  const list = mode === 'docente' ? docentiList : classiList;
+  const filtered = list.filter(x => x.toLowerCase().includes(val)).slice(0, 12);
+
+  if (!filtered.length) { sugg.classList.remove('show'); return; }
+
+  sugg.innerHTML = filtered.map(x => `<div class="suggestion-item" onclick="select('${x}')">${x}</div>`).join('');
+  sugg.classList.add('show');
+});
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const val = input.value.trim();
+    if (val) select(val);
+  }
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-box') && !e.target.closest('.suggestions')) {
+    sugg.classList.remove('show');
+  }
+});
+
+function select(name) {
+  input.value = name;
+  sugg.classList.remove('show');
+  showTimetable(name);
+}
+
+function showTimetable(name) {
+  let orario, subtitle;
+
+  if (mode === 'docente') {
+    // normalize
+    const key = Object.keys(orarioDocenti).find(k => k.toLowerCase() === name.toLowerCase());
+    if (!key) { renderNoResult(name); return; }
+    orario = {};
+    GIORNI.forEach(g => {
+      orario[g] = (orarioDocenti[key][g] || []).slice(0, 6);
+    });
+    subtitle = 'Orario Docente';
+    document.getElementById('resultTitle').textContent = key;
+  } else {
+    const key = classiList.find(k => k.toLowerCase() === name.toLowerCase());
+    if (!key) { renderNoResult(name); return; }
+    orario = buildClasseTimetable(key);
+    subtitle = 'Orario Classe';
+    document.getElementById('resultTitle').textContent = 'Classe ' + key;
+  }
+
+  document.getElementById('resultSubtitle').textContent = subtitle + ' · A.S. 2025/26';
+  document.getElementById('resultHeader').classList.add('show');
+  document.getElementById('placeholder').style.display = 'none';
+
+  const wrap = document.getElementById('timetableWrap');
+  wrap.innerHTML = '';
+
+  const table = document.createElement('table');
+  table.className = 'orario';
+
+  // THEAD: ora-col + un th per giorno
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  const emptyTh = document.createElement('th');
+  emptyTh.className = 'ora-col';
+  emptyTh.textContent = '';
+  headRow.appendChild(emptyTh);
+  GIORNI_LABEL.forEach(label => {
+    const th = document.createElement('th');
+    th.textContent = label;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  // TBODY: una riga per ora
+  const tbody = document.createElement('tbody');
+  for (let i = 0; i < 6; i++) {
+    const tr = document.createElement('tr');
+
+    // etichetta ora
+    const tdLabel = document.createElement('td');
+    tdLabel.className = 'ora-label';
+    tdLabel.textContent = (i + 1) + 'ª';
+    tr.appendChild(tdLabel);
+
+    // cella per ogni giorno
+    GIORNI.forEach(giorno => {
+      const ore = orario[giorno] || [];
+      const data = ore[i];
+      const td = document.createElement('td');
+      td.className = 'cell' + (data ? ' filled' : '');
+      if (data) {
+        const mat = document.createElement('span');
+        mat.className = 'cell-materia';
+        mat.textContent = data.materia || data.classe || '';
+        td.appendChild(mat);
+        const info = document.createElement('span');
+        info.className = 'cell-info';
+        info.textContent = mode === 'docente' ? (data.classe || '') : (data.docente || '');
+        td.appendChild(info);
+      }
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  }
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+  wrap.classList.add('show');
+}
+
+function renderNoResult(name) {
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('resultHeader').classList.remove('show');
+  const wrap = document.getElementById('timetableWrap');
+  wrap.innerHTML = `<div class="no-result">Nessun risultato per "<strong>${name}</strong>"</div>`;
+  wrap.classList.add('show');
+}
+</script>
+</body>
+</html>
