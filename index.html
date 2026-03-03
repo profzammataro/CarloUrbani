@@ -209,36 +209,7 @@
     border-spacing: 2px;
     min-width: 420px;
   }
-  table.orario thead th {
-    background: var(--surface2);
-    color: var(--accent);
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0.55rem 0.3rem;
-    text-align: center;
-    border-radius: 6px;
-  }
-  table.orario thead th.ora-col {
-    color: var(--text-muted);
-    background: transparent;
-    font-size: 0.65rem;
-    min-width: 28px;
-    width: 28px;
-  }
-  table.orario tbody td.ora-label {
-    color: var(--accent);
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.7rem;
-    text-align: center;
-    padding: 0.3rem 0.2rem;
-    background: var(--surface2);
-    border-radius: 6px;
-    vertical-align: middle;
-  }
+  table.orario thead th.ora-col-dup { display: none; }
   table.orario tbody td.cell {
     background: var(--bg);
     border-radius: 6px;
@@ -278,12 +249,70 @@
   .cell-materia.tipo-disposizione  { color: var(--accent3); }
   .cell-materia.tipo-completamento { color: var(--text-muted); font-style: italic; }
   .cell-materia.tipo-copresenza    { color: var(--accent2); }
+  /* Classe/Docente: elemento principale, grande */
+  .cell-classe {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1.2;
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 0.02em;
+    display: block;
+  }
+  .cell-classe.tipo-copresenza { color: var(--accent2); }
+  /* Materia: elemento secondario, piccolo */
+  .cell-sub {
+    font-size: 0.55rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    line-height: 1.2;
+    font-family: 'DM Sans', sans-serif;
+    display: block;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .cell-sub.tipo-copresenza { color: rgba(255,107,107,0.7); }
   .cell-info {
     font-size: 0.58rem;
     color: var(--text-muted);
     margin-top: 2px;
     line-height: 1.2;
     display: block;
+  }
+  /* Header ore (righe) */
+  table.orario tbody td.ora-label {
+    color: #f0a500;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 0.3rem 0.2rem;
+    background: rgba(240,165,0,0.08);
+    border-radius: 6px;
+    vertical-align: middle;
+    border: 1px solid rgba(240,165,0,0.2);
+  }
+  /* Header giorni (colonne) */
+  table.orario thead th {
+    background: rgba(100,160,255,0.1);
+    color: #6ab0ff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.55rem 0.3rem;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid rgba(100,160,255,0.2);
+  }
+  table.orario thead th.ora-col {
+    background: transparent;
+    border: none;
+    font-size: 0.65rem;
+    min-width: 28px;
+    width: 28px;
   }
   /* Legenda */
   .legenda {
@@ -1005,15 +1034,33 @@ function showTimetable(name) {
       if (data) {
         const tipo = data.tipo || 'normale';
         td.className = `cell tipo-${tipo}`;
-        const mat = document.createElement('span');
-        mat.className = `cell-materia tipo-${tipo}`;
-        mat.textContent = data.materia || '';
-        td.appendChild(mat);
-        if (data.classe) {
-          const info = document.createElement('span');
-          info.className = 'cell-info';
-          info.textContent = mode === 'docente' ? data.classe : (data.docente || '');
-          td.appendChild(info);
+
+        if (tipo === 'disposizione' || tipo === 'completamento') {
+          // Solo etichetta centrata
+          const mat = document.createElement('span');
+          mat.className = `cell-materia tipo-${tipo}`;
+          mat.textContent = data.materia || '';
+          td.appendChild(mat);
+        } else if (mode === 'docente') {
+          // Modalità docente: CLASSE grande, materia piccola sotto
+          const cls = document.createElement('span');
+          cls.className = `cell-classe tipo-${tipo}`;
+          cls.textContent = data.classe || '';
+          td.appendChild(cls);
+          const mat = document.createElement('span');
+          mat.className = `cell-sub tipo-${tipo}`;
+          mat.textContent = data.materia || '';
+          td.appendChild(mat);
+        } else {
+          // Modalità classe: MATERIA grande, docente piccolo sotto
+          const mat = document.createElement('span');
+          mat.className = `cell-classe tipo-${tipo}`;
+          mat.textContent = data.materia || '';
+          td.appendChild(mat);
+          const doc = document.createElement('span');
+          doc.className = `cell-sub tipo-${tipo}`;
+          doc.textContent = data.docente || '';
+          td.appendChild(doc);
         }
       } else {
         td.className = 'cell';
